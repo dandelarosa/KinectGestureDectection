@@ -37,11 +37,15 @@ namespace KinectGestureDectection
             gestureRecognizer.TraceTo(gesturesCanvas, System.Windows.Media.Color.FromRgb(255, 0, 0));
             gestureRecognizer.OnGestureDetected += new Action<string>(OnGestureDetected);
             gestureRecognizer.MinimalPeriodBetweenGestures = 2000;
+
+            textBlock1.Text += "Ready.\n";
         }
 
         private void OnGestureDetected(string gesture)
         {
             System.Diagnostics.Debug.WriteLine(DateTime.Now.Ticks + " " + gesture);
+            textBlock1.Text += DateTime.Now.Ticks + " " + gesture + "\n";
+            textScrollView.ScrollToEnd();
         }
 
         private void Clean()

@@ -4,10 +4,21 @@
         Title="MainWindow" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
         <Viewbox Margin="5" Grid.RowSpan="5">
-            <Grid Width="640" Height="480" ClipToBounds="True">
-                <Image x:Name="kinectDisplay"></Image>
-                <Canvas x:Name="kinectCanvas"></Canvas>
-                <Canvas x:Name="gesturesCanvas"></Canvas>
+            <Grid Width="640" Height="580" ClipToBounds="True">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="100"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Row="0" Grid.Column="0" Width="640" Height="480" x:Name="kinectDisplay"></Image>
+                <Canvas Grid.Row="0" Grid.Column="0" Width="640" Height="480" x:Name="kinectCanvas"></Canvas>
+                <Canvas Grid.Row="0" Grid.Column="0" Width="640" Height="480" x:Name="gesturesCanvas"></Canvas>
+                <ScrollViewer Grid.Row="1" Grid.Column="0" Width="640" Height="100" x:Name="textScrollView">
+                    <TextBlock Width="640" HorizontalAlignment="Left" x:Name="textBlock1" VerticalAlignment="Top"/>
+                </ScrollViewer>
+                
             </Grid>
         </Viewbox>
     </Grid>
