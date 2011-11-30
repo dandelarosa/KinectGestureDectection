@@ -18,6 +18,7 @@ namespace KinectGestureDectection
         private readonly ColorStreamManager streamManager = new ColorStreamManager();
         private readonly GestureDetector gestureRecognizer = new SimpleSlashGestureDetector();
         private Game game = new Game();
+        private bool isGameStarted = false;
 
         private System.Windows.Threading.DispatcherTimer dispatcherTimer =
                 new System.Windows.Threading.DispatcherTimer();
@@ -44,9 +45,7 @@ namespace KinectGestureDectection
 
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
 
-            PrintLine("Ready.");
-            
-            NextTurn();
+            PrintLine("Waiting to register skeleton...");
         }
 
         private void NextTurn()
@@ -100,6 +99,9 @@ namespace KinectGestureDectection
         {
             System.Diagnostics.Debug.WriteLine(DateTime.Now.Ticks + " " + gesture);
             PrintLine(DateTime.Now.Ticks + " " + gesture);
+
+            // Don't do anything to the game if it hasn't started yet
+            if (!isGameStarted) return;
 
             // Process Gesture
             if (game.EnterGesture(gesture))
@@ -186,6 +188,13 @@ namespace KinectGestureDectection
             if (!e.SkeletonFrame.Skeletons.Any(s => s.TrackingState != SkeletonTrackingState.NotTracked))
                 return;
             ProcessFrame(e.SkeletonFrame);
+            // If the skeleton is ready, start the game
+            if (!isGameStarted)
+            {
+                isGameStarted = true;
+                PrintLine("Game Started");
+                NextTurn();
+            }
         }
 
     }
