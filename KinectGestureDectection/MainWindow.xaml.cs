@@ -17,6 +17,10 @@ namespace KinectGestureDectection
 
         private readonly ColorStreamManager streamManager = new ColorStreamManager();
         private readonly GestureDetector gestureRecognizer = new SimpleSlashGestureDetector();
+        private Game game = new Game();
+
+        private System.Windows.Threading.DispatcherTimer dispatcherTimer =
+                new System.Windows.Threading.DispatcherTimer();
 
         public MainWindow()
         {
@@ -38,14 +42,57 @@ namespace KinectGestureDectection
             gestureRecognizer.OnGestureDetected += new Action<string>(OnGestureDetected);
             gestureRecognizer.MinimalPeriodBetweenGestures = 2000;
 
-            textBlock1.Text += "Ready.\n";
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+
+            PrintLine("Ready.");
+            
+            NextTurn();
+        }
+
+        private void NextTurn()
+        {
+            // Tell the game that it's the next turn
+            game.NextTurn();
+
+            // Print Prompt
+            PrintLine(game.GetPrompt());
+
+            //  DispatcherTimer setup
+            int duration = 5;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, duration);
+            dispatcherTimer.Start();
+        }
+
+        /**
+         * TODO
+         */
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            // Tell the game that time is up
+            PrintLine("Time's up.");
+
+            // Do another timed event
+            NextTurn();
+        }
+
+        private void PrintLine(string text)
+        {
+            textBlock1.Text += text + "\n";
+            textScrollView.ScrollToEnd();
         }
 
         private void OnGestureDetected(string gesture)
         {
             System.Diagnostics.Debug.WriteLine(DateTime.Now.Ticks + " " + gesture);
-            textBlock1.Text += DateTime.Now.Ticks + " " + gesture + "\n";
-            textScrollView.ScrollToEnd();
+            PrintLine(DateTime.Now.Ticks + " " + gesture);
+
+            // Process Gesture
+            if (game.EnterGesture(gesture))
+            {
+                // If correct, go to the next turn
+                dispatcherTimer.Stop();
+                NextTurn();
+            }
         }
 
         private void Clean()
