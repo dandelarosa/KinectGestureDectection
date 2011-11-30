@@ -9,6 +9,9 @@ namespace KinectGestureDectection
     {
         private TurnInfo currentTurnInfo;
 
+        public int currentLife = 100;
+        public int maxLife = 100;
+
         public void NextTurn()
         {
             // Ideally, we would a diverse sequence of turns, but for now, 

@@ -51,6 +51,9 @@ namespace KinectGestureDectection
 
         private void NextTurn()
         {
+            // Print current life
+            PrintLine("Current Life: " + game.currentLife + "/" + game.maxLife);
+
             // Tell the game that it's the next turn
             game.NextTurn();
 
@@ -71,8 +74,20 @@ namespace KinectGestureDectection
             // Tell the game that time is up
             PrintLine("Time's up.");
 
-            // Do another timed event
-            NextTurn();
+            // Hurt the player
+            game.currentLife -= 10;
+
+            if (game.currentLife > 0)
+            {
+                // Do another timed event
+                NextTurn();
+            }
+            else
+            {
+                dispatcherTimer.Stop();
+                PrintLine("Current Life: " + game.currentLife + "/" + game.maxLife);
+                PrintLine("Game Over");
+            }
         }
 
         private void PrintLine(string text)
