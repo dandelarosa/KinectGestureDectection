@@ -70,7 +70,9 @@
     <Compile Include="ICanvasDrawable.cs" />
     <Compile Include="ICursorUpdatable.cs" />
     <Compile Include="PathSelectionComponent.cs" />
+    <Compile Include="Room.cs" />
     <Compile Include="SimpleSwipeGestureDetector.cs" />
+    <Compile Include="Turn.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -14,12 +14,16 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Width="640" Height="480" x:Name="kinectDisplay"></Image>
                 <Canvas Grid.Row="0" Grid.Column="0" Width="640" Height="480" x:Name="kinectCanvas"></Canvas>
-                <Canvas Grid.Row="0" Grid.Column="0" Width="640" Height="480" x:Name="gesturesCanvas"></Canvas>
+                <Canvas Grid.Row="0" Grid.Column="0" Width="640" Height="480" x:Name="gesturesCanvas">
+                    <TextBlock Canvas.Left="22" Canvas.Top="15" Height="40" Name="playerLife" Text="Player Life: 0/0" Width="280" FontSize="28" Background="Black" Foreground="White" Padding="10,0,0,0" />
+                    <TextBlock Canvas.Left="338" Canvas.Top="15" Height="40" Name="enemyLife" Text="Enemy Life: 0/0" Width="280" FontSize="28" Foreground="White" Background="Black" Padding="10,0,0,0" />
+                </Canvas>
                 <ScrollViewer Grid.Row="1" Grid.Column="0" Width="640" Height="100" x:Name="textScrollView">
                     <TextBlock Width="640" HorizontalAlignment="Left" x:Name="textBlock1" VerticalAlignment="Top"/>
                 </ScrollViewer>
                 
             </Grid>
         </Viewbox>
+        
     </Grid>
 </Window>

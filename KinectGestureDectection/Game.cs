@@ -23,6 +23,16 @@ namespace KinectGestureDectection
             return currentRoom.GetPrompt();
         }
 
+        public int GetCurrentEnemyLife()
+        {
+            return currentRoom.currentEnemyLife;
+        }
+
+        public int GetMaxEnemyLife()
+        {
+            return currentRoom.currentEnemyLife;
+        }
+
         public bool EnterGesture(string gesture)
         {
             return currentRoom.EnterGesture(gesture);

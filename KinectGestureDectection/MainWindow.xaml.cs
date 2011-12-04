@@ -50,8 +50,12 @@ namespace KinectGestureDectection
 
         private void NextTurn()
         {
+            // Display current life 
+            playerLife.Text = "Player Life: " + game.currentPlayerLife + "/" + game.maxPlayerLife;
+            enemyLife.Text = "Enemy Life: " + game.GetCurrentEnemyLife() + "/" + game.GetMaxEnemyLife();
             // Print current life
-            PrintLine("Current Life: " + game.currentPlayerLife + "/" + game.maxPlayerLife);
+            //PrintLine("Player Life: " + game.currentPlayerLife + "/" + game.maxPlayerLife);
+            //PrintLine("Enemy Life: " + game.GetCurrentEnemyLife() + "/" + game.GetMaxEnemyLife());
 
             // Tell the game that it's the next turn
             game.NextTurn();
@@ -84,7 +88,9 @@ namespace KinectGestureDectection
             else
             {
                 dispatcherTimer.Stop();
-                PrintLine("Current Life: " + game.currentPlayerLife + "/" + game.maxPlayerLife);
+                //PrintLine("Current Life: " + game.currentPlayerLife + "/" + game.maxPlayerLife);
+                playerLife.Text = "Player Life: " + game.currentPlayerLife + "/" + game.maxPlayerLife;
+                enemyLife.Text = "Enemy Life: " + game.GetCurrentEnemyLife() + "/" + game.GetMaxEnemyLife();
                 PrintLine("Game Over");
             }
         }
