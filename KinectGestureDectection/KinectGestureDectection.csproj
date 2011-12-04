@@ -62,7 +62,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Arrow.cs" />
+    <Compile Include="ArrowCursorTarget.cs" />
+    <Compile Include="CombatPostureDetector.cs" />
+    <Compile Include="CursorTarget.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="ICanvasDrawable.cs" />
+    <Compile Include="ICursorUpdatable.cs" />
+    <Compile Include="PathSelectionComponent.cs" />
     <Compile Include="SimpleSwipeGestureDetector.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

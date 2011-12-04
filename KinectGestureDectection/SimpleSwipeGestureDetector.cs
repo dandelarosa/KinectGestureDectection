@@ -9,9 +9,9 @@ namespace KinectGestureDectection
 {
     class SimpleSlashGestureDetector : GestureDetector
     {
-        protected const float SwipeMinimalLength = 0.3f;
-        protected const int SwipeMinimalDuration = 250;
-        protected const int SwipeMaximalDuration = 1000;
+        protected const float SwipeMinimalLength = 0.5f;
+        protected const int SwipeMinimalDuration = 100;
+        protected const int SwipeMaximalDuration = 500;
 
         protected bool ScanPositions(Func<Vector3, Vector3, bool> directionFunction, Func<Vector3, Vector3, bool> lengthFunction, int minTime, int maxTime)
         {
