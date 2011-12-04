@@ -13,6 +13,8 @@ namespace KinectGestureDectection
         public int currentPlayerLife = 100;
         public int maxPlayerLife = 100;
 
+        private int playerStrength = 10;
+
         public void NextTurn()
         {
             currentRoom.NextTurn();
@@ -20,7 +22,19 @@ namespace KinectGestureDectection
 
         public string GetPrompt()
         {
-            return currentRoom.GetPrompt();
+            if (currentPlayerLife > 0)
+            {
+                return currentRoom.GetPrompt();
+            }
+            else
+            {
+                return "Game Over";
+            }
+        }
+
+        public int GetTurnDuration()
+        {
+            return currentRoom.GetTurnDuration();
         }
 
         public int GetCurrentEnemyLife()
@@ -30,12 +44,22 @@ namespace KinectGestureDectection
 
         public int GetMaxEnemyLife()
         {
-            return currentRoom.currentEnemyLife;
+            return currentRoom.maxEnemyLife;
         }
 
         public bool EnterGesture(string gesture)
         {
-            return currentRoom.EnterGesture(gesture);
+            bool result = currentRoom.EnterGesture(gesture);
+            if (result == true)
+            {
+                currentRoom.currentEnemyLife -= playerStrength;
+            }
+            return result;
+        }
+
+        public void TimeUp()
+        {
+            currentPlayerLife -= currentRoom.enemyStrength;
         }
 
         public void GoInDirection(string direction)

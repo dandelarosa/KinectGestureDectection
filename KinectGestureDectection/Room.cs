@@ -8,35 +8,49 @@ namespace KinectGestureDectection
     public abstract class Room
     {
         protected Turn currentTurn;
-        public int currentEnemyLife;
-        public int maxEnemyLife;
+        public int currentEnemyLife = 100;
+        public int maxEnemyLife = 100;
+        public int enemyStrength = 10;
 
         public abstract void NextTurn();
-        public abstract string GetPrompt();
-        public abstract bool EnterGesture(string gesture);
+
+        public string GetPrompt()
+        {
+            if (currentEnemyLife > 0)
+            {
+                return currentTurn.GetPrompt();
+            }
+            else
+            {
+                return "Choose direction to go to";
+            }
+        }
+
+        public int GetTurnDuration()
+        {
+            if (currentEnemyLife > 0)
+            {
+                return currentTurn.GetDuration();
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public bool EnterGesture(string gesture)
+        {
+            return currentTurn.EnterGesture(gesture);
+        }
     }
 
     public class SampleRoom : Room
     {
-        public SampleRoom()
-        {
-            currentEnemyLife = 100;
-            maxEnemyLife = 100;
-        }
-
         public override void NextTurn()
         {
             // Ideally, we would a diverse sequence of turns, but for now, 
             // just have the game ask for horizontal slashes each turn
             currentTurn = new HorizontalSlashTurn();
-        }
-        public override string GetPrompt()
-        {
-            return currentTurn.GetPrompt();
-        }
-        public override bool EnterGesture(string gesture)
-        {
-            return currentTurn.EnterGesture(gesture);
         }
     }
 }

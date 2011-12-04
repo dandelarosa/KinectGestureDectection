@@ -64,9 +64,23 @@ namespace KinectGestureDectection
             PrintLine(game.GetPrompt());
 
             //  DispatcherTimer setup
-            int duration = 5;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, duration);
-            dispatcherTimer.Start();
+            if (game.currentPlayerLife > 0 && game.GetCurrentEnemyLife() > 0)
+            {
+                int duration = game.GetTurnDuration();
+                if (duration > 0)
+                {
+                    dispatcherTimer.Interval = new TimeSpan(0, 0, duration);
+                    dispatcherTimer.Start();
+                }
+                else
+                {
+                    dispatcherTimer.Stop();
+                }
+            }
+            else
+            {
+                dispatcherTimer.Stop();
+            }
         }
 
         /**
@@ -78,21 +92,9 @@ namespace KinectGestureDectection
             PrintLine("Time's up.");
 
             // Hurt the player
-            game.currentPlayerLife -= 10;
+            game.TimeUp();
 
-            if (game.currentPlayerLife > 0)
-            {
-                // Do another timed event
-                NextTurn();
-            }
-            else
-            {
-                dispatcherTimer.Stop();
-                //PrintLine("Current Life: " + game.currentPlayerLife + "/" + game.maxPlayerLife);
-                playerLife.Text = "Player Life: " + game.currentPlayerLife + "/" + game.maxPlayerLife;
-                enemyLife.Text = "Enemy Life: " + game.GetCurrentEnemyLife() + "/" + game.GetMaxEnemyLife();
-                PrintLine("Game Over");
-            }
+            NextTurn();
         }
 
         private void PrintLine(string text)

@@ -9,6 +9,7 @@ namespace KinectGestureDectection
     {
         string GetPrompt();
         bool EnterGesture(string gesture);
+        int GetDuration();
     }
 
     class HorizontalSlashTurn : Turn
@@ -28,6 +29,11 @@ namespace KinectGestureDectection
             {
                 return false;
             }
+        }
+
+        public int GetDuration()
+        {
+            return 5;
         }
     }
 }
