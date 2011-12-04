@@ -7,52 +7,34 @@ namespace KinectGestureDectection
 {
     public class Game
     {
-        private TurnInfo currentTurnInfo;
+        // TODO set this to the first room in the game
+        private Room currentRoom = new SampleRoom();
 
-        public int currentLife = 100;
-        public int maxLife = 100;
+        public int currentPlayerLife = 100;
+        public int maxPlayerLife = 100;
 
         public void NextTurn()
         {
-            // Ideally, we would a diverse sequence of turns, but for now, 
-            // just have the game ask for horizontal slashes each turn
-            currentTurnInfo = new HorizontalSlashTurn();
+            currentRoom.NextTurn();
         }
 
         public string GetPrompt()
         {
-            return currentTurnInfo.GetPrompt();
+            return currentRoom.GetPrompt();
         }
 
         public bool EnterGesture(string gesture)
         {
-            return currentTurnInfo.EnterGesture(gesture);
-        }
-    }
-
-    interface TurnInfo
-    {
-        string GetPrompt();
-        bool EnterGesture(string gesture);
-    }
-
-    class HorizontalSlashTurn : TurnInfo
-    {
-        public string GetPrompt()
-        {
-            return "Slash Horizontal";
+            return currentRoom.EnterGesture(gesture);
         }
 
-        public bool EnterGesture(string gesture)
+        public void GoInDirection(string direction)
         {
-            if (gesture == "SlashLeftToRight" || gesture == "SlashRightToLeft")
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            // TODO
+            // This function will look for a room placed in the selected 
+            // direction from the current room and go there
+            // e.g. currentRoom = <something>;
+            return;
         }
     }
 }
