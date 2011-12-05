@@ -9,7 +9,7 @@ using System.Windows.Shapes;
 
 namespace KinectGestureDectection
 {
-    class ArrowCursorTarget : CursorTarget, ICanvasDrawable
+    class ArrowCursorTarget : CursorTarget
     {
         private readonly Brush nonSelectedFillColor = Brushes.LightBlue;
         private readonly Brush selectedColor = Brushes.OrangeRed;
@@ -34,11 +34,6 @@ namespace KinectGestureDectection
             };
             Canvas.SetLeft(Shape, Bounds.Left);
             Canvas.SetTop(Shape, Bounds.Top);
-        }
-
-        public void Draw(Canvas canvas)
-        {
-            canvas.Children.Add(Shape);
         }
 
         protected override void onCursorEnter()

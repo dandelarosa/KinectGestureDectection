@@ -13,15 +13,13 @@ namespace KinectGestureDectection
     public partial class MainWindow : Window
     {
         private Runtime kinectRuntime;
-        private SkeletonDisplayManager skeletonDisplayManager;
-
-        private readonly ColorStreamManager streamManager = new ColorStreamManager();
-        private readonly GestureDetector gestureRecognizer = new SimpleSlashGestureDetector();
         private Game game = new Game();
         private bool isGameStarted = false;
 
         private System.Windows.Threading.DispatcherTimer dispatcherTimer =
                 new System.Windows.Threading.DispatcherTimer();
+
+        private KinectManager kinectManager;
 
         public MainWindow()
         {
@@ -35,17 +33,42 @@ namespace KinectGestureDectection
 
             kinectRuntime.Initialize(RuntimeOptions.UseSkeletalTracking | RuntimeOptions.UseColor);
             kinectRuntime.VideoStream.Open(ImageStreamType.Video, 2, ImageResolution.Resolution640x480, ImageType.Color);
-            kinectRuntime.VideoFrameReady += new EventHandler<ImageFrameReadyEventArgs>(kinectRuntime_VideoFrameReady);
-            kinectRuntime.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(kinectRuntime_SkeletonFrameReady);
-            skeletonDisplayManager = new SkeletonDisplayManager(kinectRuntime.SkeletonEngine, kinectCanvas);
-            
-            gestureRecognizer.TraceTo(gesturesCanvas, System.Windows.Media.Color.FromRgb(255, 0, 0));
-            gestureRecognizer.OnGestureDetected += new Action<string>(OnGestureDetected);
-            gestureRecognizer.MinimalPeriodBetweenGestures = 2000;
+
+            kinectManager = new KinectManager(kinectRuntime, kinectDisplay, mainCanvas, kinectCanvas);
+            kinectManager.SkeletonFound += new Action(kinectManager_SkeletonFound);
+            kinectManager.CombatGestureDectected += new Action<string>(kinectManager_CombatGestureDectected);
 
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
 
             PrintLine("Waiting to register skeleton...");
+        }
+
+        void kinectManager_CombatGestureDectected(string gesture)
+        {
+            System.Diagnostics.Debug.WriteLine(DateTime.Now.Ticks + " " + gesture);
+            PrintLine(DateTime.Now.Ticks + " " + gesture);
+
+            // Don't do anything to the game if it hasn't started yet
+            if (!isGameStarted) return;
+
+            // Process Gesture
+            if (game.EnterGesture(gesture))
+            {
+                // If correct, go to the next turn
+                dispatcherTimer.Stop();
+                NextTurn();
+            }
+        }
+
+        void kinectManager_SkeletonFound()
+        {
+            // If the skeleton is ready, start the game
+            if (!isGameStarted)
+            {
+                isGameStarted = true;
+                PrintLine("Game Started");
+                NextTurn();
+            }
         }
 
         private void NextTurn()
@@ -60,8 +83,21 @@ namespace KinectGestureDectection
             // Tell the game that it's the next turn
             game.NextTurn();
 
+            string prompt = game.GetPrompt();
+
             // Print Prompt
-            PrintLine(game.GetPrompt());
+            PrintLine(prompt);
+
+            if (prompt == "Choose direction to go to")
+            {
+                kinectManager.CurrentState = KinectManager.InputState.PathSelection;
+                kinectManager.SetPathEnabled(PathSelectionComponent.PathDirection.Back, false);
+                kinectManager.SetPathEnabled(PathSelectionComponent.PathDirection.Left, false);
+            }
+            else
+            {
+                kinectManager.CurrentState = KinectManager.InputState.CombatPosture;
+            }
 
             //  DispatcherTimer setup
             if (game.currentPlayerLife > 0 && game.GetCurrentEnemyLife() > 0)
@@ -103,55 +139,12 @@ namespace KinectGestureDectection
             textScrollView.ScrollToEnd();
         }
 
-        private void OnGestureDetected(string gesture)
-        {
-            System.Diagnostics.Debug.WriteLine(DateTime.Now.Ticks + " " + gesture);
-            PrintLine(DateTime.Now.Ticks + " " + gesture);
-
-            // Don't do anything to the game if it hasn't started yet
-            if (!isGameStarted) return;
-
-            // Process Gesture
-            if (game.EnterGesture(gesture))
-            {
-                // If correct, go to the next turn
-                dispatcherTimer.Stop();
-                NextTurn();
-            }
-        }
-
         private void Clean()
         {
-            gestureRecognizer.OnGestureDetected -= OnGestureDetected;
-
             if (kinectRuntime != null)
             {
-                kinectRuntime.VideoFrameReady -= kinectRuntime_VideoFrameReady;
-                kinectRuntime.SkeletonFrameReady -= kinectRuntime_SkeletonFrameReady;
                 kinectRuntime.Uninitialize();
                 kinectRuntime = null;
-            }
-        }
-
-        private void ProcessFrame(SkeletonFrame frame)
-        {
-            foreach (var skeleton in frame.Skeletons)
-            {
-                if (skeleton.TrackingState != SkeletonTrackingState.Tracked)
-                    continue;
-
-                foreach (Joint joint in skeleton.Joints)
-                {
-                    if (joint.Position.W < 0.8f || joint.TrackingState != JointTrackingState.Tracked)
-                        continue;
-
-                    if (joint.ID == JointID.HandRight)
-                    {
-                        gestureRecognizer.Add(joint.Position, kinectRuntime.SkeletonEngine);
-                    }
-                }
-
-                skeletonDisplayManager.Draw(frame);
             }
         }
 
@@ -182,27 +175,6 @@ namespace KinectGestureDectection
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Clean();
-        }
-
-        private void kinectRuntime_VideoFrameReady(object sender, ImageFrameReadyEventArgs e)
-        {
-            kinectDisplay.Source = streamManager.Update(e);
-        }
-
-        private void kinectRuntime_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
-        {
-            if (e.SkeletonFrame == null)
-                return;
-            if (!e.SkeletonFrame.Skeletons.Any(s => s.TrackingState != SkeletonTrackingState.NotTracked))
-                return;
-            ProcessFrame(e.SkeletonFrame);
-            // If the skeleton is ready, start the game
-            if (!isGameStarted)
-            {
-                isGameStarted = true;
-                PrintLine("Game Started");
-                NextTurn();
-            }
         }
 
     }

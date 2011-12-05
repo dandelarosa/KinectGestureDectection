@@ -70,7 +70,7 @@ namespace KinectGestureDectection
         /// <summary>
         /// When enabled, will detect cursors in the target area.
         /// </summary>
-        public bool IsEnabled { get; set; }
+        public virtual bool IsEnabled { get; set; }
 
         /// <summary>
         /// Returns true if there is a cursor inside the target area.

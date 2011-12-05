@@ -13,7 +13,7 @@ namespace KinectGestureDectection
     /// Possible directions are members of PathDirection.
     /// The directions are visualized as arrows around the screen.
     /// </summary>
-    class PathSelectionComponent : ICanvasDrawable, ICursorUpdatable
+    class PathSelectionComponent : ICursorUpdatable
     {
         public enum PathDirection
         {
@@ -46,6 +46,7 @@ namespace KinectGestureDectection
 
         #endregion
 
+        private Canvas canvas;
         private Dictionary<PathDirection, ArrowCursorTarget> targets;
 
         private void createArrow(PathDirection direction, Point center, int radius, double rotationAngle)
@@ -54,47 +55,52 @@ namespace KinectGestureDectection
             arrow.Shape.LayoutTransform = new RotateTransform(rotationAngle, center.X, center.Y);
             arrow.CursorSelect += () => onPathSelected(direction);
             targets.Add(direction, arrow);
+            canvas.Children.Add(arrow.Shape);
         }
 
-        public bool IsEnabled { get; set; }
+        private bool isEnabled;
+        public bool IsEnabled
+        {
+            get { return isEnabled; }
+            set
+            {
+                isEnabled = value;
+                foreach (var t in targets)
+                    SetTargetEnabled(t.Key, value);
+            }
+        }
 
         public void SetTargetEnabled(PathDirection direction, bool isEnabled)
         {
-            targets[direction].IsEnabled = isEnabled;
+            var target = targets[direction];
+            target.IsEnabled = isEnabled;
+            bool containsShape = canvas.Children.Contains(target.Shape);
+            if(isEnabled && !containsShape)
+                canvas.Children.Add(target.Shape);
+            else if(!isEnabled && containsShape)
+                canvas.Children.Remove(target.Shape);
         }
 
-        public PathSelectionComponent(double canvasWidth, double canvasHeight)
+        public PathSelectionComponent(Canvas canvas)
         {
+            this.canvas = canvas;
+
             int targetRadius = 40;
-            double halfCanvasHeight = canvasHeight / 2;
-            double halfCanvasWidth = canvasWidth / 2;
+            double halfCanvasHeight = canvas.ActualHeight / 2;
+            double halfCanvasWidth = canvas.ActualWidth / 2;
 
             targets = new Dictionary<PathDirection, ArrowCursorTarget>();
 
             createArrow(PathDirection.Forward, new Point(halfCanvasWidth, targetRadius), targetRadius, -90);
             createArrow(PathDirection.Left, new Point(targetRadius, halfCanvasHeight), targetRadius, 180);
-            createArrow(PathDirection.Right, new Point(canvasWidth - targetRadius, halfCanvasHeight), targetRadius, 0);
-            createArrow(PathDirection.Back, new Point(halfCanvasWidth, canvasHeight - targetRadius), targetRadius, 90);
-
-            IsEnabled = true;
+            createArrow(PathDirection.Right, new Point(canvas.ActualWidth - targetRadius, halfCanvasHeight), targetRadius, 0);
+            createArrow(PathDirection.Back, new Point(halfCanvasWidth, canvas.ActualHeight - targetRadius), targetRadius, 90);
         }
 
         public void UpdateCursors(IEnumerable<Point> cursors)
         {
-            if (!IsEnabled)
-                return;
             foreach (var target in targets.Values)
-                if (target.IsEnabled)
-                    target.UpdateCursors(cursors);
-        }
-
-        public void Draw(Canvas canvas)
-        {
-            if (!IsEnabled)
-                return;
-            foreach (var target in targets.Values)
-                if(target.IsEnabled)
-                    target.Draw(canvas);
+                target.UpdateCursors(cursors);      
         }
     }
 }

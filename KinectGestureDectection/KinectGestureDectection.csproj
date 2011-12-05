@@ -67,8 +67,8 @@
     <Compile Include="CombatPostureDetector.cs" />
     <Compile Include="CursorTarget.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="ICanvasDrawable.cs" />
     <Compile Include="ICursorUpdatable.cs" />
+    <Compile Include="KinectManager.cs" />
     <Compile Include="PathSelectionComponent.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="SimpleSwipeGestureDetector.cs" />

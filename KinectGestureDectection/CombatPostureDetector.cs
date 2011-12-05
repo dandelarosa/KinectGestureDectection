@@ -14,8 +14,6 @@ namespace KinectGestureDectection
 
         public CombatPostureDetector() : base(10) {}
 
-
-
         public override void TrackPostures(ReplaySkeletonData skeleton)
         {
             if (skeleton.TrackingState != SkeletonTrackingState.Tracked)
@@ -46,7 +44,7 @@ namespace KinectGestureDectection
 
             if (AreHandsJoined(leftHandPosition, rightHandPosition))
             {
-                RaisePostureDetected("HandsJoined");
+                RaisePostureDetected("CombatPosture");
                 return;
             }
 
