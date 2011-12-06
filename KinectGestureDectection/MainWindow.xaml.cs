@@ -13,6 +13,7 @@ namespace KinectGestureDectection
     public partial class MainWindow : Window
     {
         private KinectManager kinectManager;
+        private AttackIndicator attackIndicator;
         private PathSelectionComponent pathSelector;
         private Game game = new Game();
         private bool isGameStarted = false;
@@ -28,6 +29,7 @@ namespace KinectGestureDectection
         void PostureDetector_PostureDetected(string obj)
         {
             kinectManager.CurrentState = KinectManager.InputState.Gesture;
+            attackIndicator.Start(AttackIndicator.AttackType.RightToLeft);
         }
 
         void GestureDetector_OnGestureDetected(string gesture)
@@ -41,6 +43,7 @@ namespace KinectGestureDectection
             // Process Gesture
             if (game.EnterGesture(gesture))
             {
+                attackIndicator.Stop();
                 // If correct, go to the next turn
                 dispatcherTimer.Stop();
                 NextTurn();
@@ -73,6 +76,7 @@ namespace KinectGestureDectection
             /** **/
 
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            attackIndicator = new AttackIndicator(mainCanvas);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

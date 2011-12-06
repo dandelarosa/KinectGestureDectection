@@ -64,6 +64,7 @@
     </ApplicationDefinition>
     <Compile Include="Arrow.cs" />
     <Compile Include="ArrowCursorTarget.cs" />
+    <Compile Include="AttackIndicator.cs" />
     <Compile Include="CombatPostureDetector.cs" />
     <Compile Include="CursorTarget.cs" />
     <Compile Include="Game.cs" />
