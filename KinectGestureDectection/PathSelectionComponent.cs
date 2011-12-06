@@ -51,11 +51,10 @@ namespace KinectGestureDectection
 
         private void createArrow(PathDirection direction, Point center, int radius, double rotationAngle)
         {
-            var arrow = new ArrowCursorTarget(center, radius);
-            arrow.Shape.LayoutTransform = new RotateTransform(rotationAngle, center.X, center.Y);
+            var arrow = new ArrowCursorTarget(canvas, center, radius);
+            arrow.LayoutTransform = new RotateTransform(rotationAngle, center.X, center.Y);
             arrow.CursorSelect += () => onPathSelected(direction);
             targets.Add(direction, arrow);
-            canvas.Children.Add(arrow.Shape);
         }
 
         private bool isEnabled;
@@ -72,13 +71,8 @@ namespace KinectGestureDectection
 
         public void SetTargetEnabled(PathDirection direction, bool isEnabled)
         {
-            var target = targets[direction];
-            target.IsEnabled = isEnabled;
-            bool containsShape = canvas.Children.Contains(target.Shape);
-            if(isEnabled && !containsShape)
-                canvas.Children.Add(target.Shape);
-            else if(!isEnabled && containsShape)
-                canvas.Children.Remove(target.Shape);
+            if(IsEnabled)
+                targets[direction].IsEnabled =  isEnabled;
         }
 
         public PathSelectionComponent(Canvas canvas)
@@ -99,8 +93,9 @@ namespace KinectGestureDectection
 
         public void UpdateCursors(IEnumerable<Point> cursors)
         {
-            foreach (var target in targets.Values)
-                target.UpdateCursors(cursors);      
+            if(IsEnabled)
+                foreach (var target in targets.Values)
+                    target.UpdateCursors(cursors);      
         }
     }
 }

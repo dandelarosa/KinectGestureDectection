@@ -12,38 +12,25 @@ namespace KinectGestureDectection
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Runtime kinectRuntime;
+        private KinectManager kinectManager;
+        private PathSelectionComponent pathSelector;
         private Game game = new Game();
         private bool isGameStarted = false;
 
         private System.Windows.Threading.DispatcherTimer dispatcherTimer =
                 new System.Windows.Threading.DispatcherTimer();
 
-        private KinectManager kinectManager;
-
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Initialize()
+        void PostureDetector_PostureDetected(string obj)
         {
-            if (kinectRuntime == null)
-                return;
-
-            kinectRuntime.Initialize(RuntimeOptions.UseSkeletalTracking | RuntimeOptions.UseColor);
-            kinectRuntime.VideoStream.Open(ImageStreamType.Video, 2, ImageResolution.Resolution640x480, ImageType.Color);
-
-            kinectManager = new KinectManager(kinectRuntime, kinectDisplay, mainCanvas, kinectCanvas);
-            kinectManager.SkeletonFound += new Action(kinectManager_SkeletonFound);
-            kinectManager.CombatGestureDectected += new Action<string>(kinectManager_CombatGestureDectected);
-
-            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-
-            PrintLine("Waiting to register skeleton...");
+            kinectManager.CurrentState = KinectManager.InputState.Gesture;
         }
 
-        void kinectManager_CombatGestureDectected(string gesture)
+        void GestureDetector_OnGestureDetected(string gesture)
         {
             System.Diagnostics.Debug.WriteLine(DateTime.Now.Ticks + " " + gesture);
             PrintLine(DateTime.Now.Ticks + " " + gesture);
@@ -58,6 +45,44 @@ namespace KinectGestureDectection
                 dispatcherTimer.Stop();
                 NextTurn();
             }
+        }
+
+        void pathSelector_PathSelected(object sender, PathSelectionComponent.PathSelectedEventArgs e)
+        {
+            pathSelector.IsEnabled = false;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            kinectManager = new KinectManager(kinectDisplay, mainCanvas, kinectCanvas);
+            kinectManager.SkeletonFound += new Action(kinectManager_SkeletonFound);
+            kinectManager.Initialize();
+
+            //This should probablly be moved into some sort of controller.
+            //GestureDetectors and PostureDetectors can be swapped in and out if necessary.
+            pathSelector = new PathSelectionComponent(mainCanvas);
+            pathSelector.IsEnabled = false;
+            pathSelector.PathSelected += new EventHandler<PathSelectionComponent.PathSelectedEventArgs>(pathSelector_PathSelected);
+            kinectManager.PostureDetector = new CombatPostureDetector();
+            kinectManager.PostureDetector.PostureDetected += new Action<string>(PostureDetector_PostureDetected);
+            kinectManager.GestureDetector = new SimpleSlashGestureDetector();
+            kinectManager.GestureDetector.OnGestureDetected += new Action<string>(GestureDetector_OnGestureDetected);
+            kinectManager.GestureDetector.TraceTo(mainCanvas, System.Windows.Media.Color.FromRgb(255, 0, 0));
+            kinectManager.GestureDetector.MinimalPeriodBetweenGestures = 2000;
+            kinectManager.CursorUpdatable = pathSelector;
+            /** **/
+
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            kinectManager.Dispose();
+        }
+
+        void kinectManager_KinectFound(Runtime kinect)
+        {
+            PrintLine("Waiting to register skeleton...");
         }
 
         void kinectManager_SkeletonFound()
@@ -88,15 +113,15 @@ namespace KinectGestureDectection
             // Print Prompt
             PrintLine(prompt);
 
+            // DEBUG/TEMP FLOW HERE
             if (prompt == "Choose direction to go to")
             {
-                kinectManager.CurrentState = KinectManager.InputState.PathSelection;
-                kinectManager.SetPathEnabled(PathSelectionComponent.PathDirection.Back, false);
-                kinectManager.SetPathEnabled(PathSelectionComponent.PathDirection.Left, false);
+                pathSelector.IsEnabled = true;
+                kinectManager.CurrentState = KinectManager.InputState.Cursor;
             }
             else
             {
-                kinectManager.CurrentState = KinectManager.InputState.CombatPosture;
+                kinectManager.CurrentState = KinectManager.InputState.Posture;
             }
 
             //  DispatcherTimer setup
@@ -138,44 +163,5 @@ namespace KinectGestureDectection
             textBlock1.Text += text + "\n";
             textScrollView.ScrollToEnd();
         }
-
-        private void Clean()
-        {
-            if (kinectRuntime != null)
-            {
-                kinectRuntime.Uninitialize();
-                kinectRuntime = null;
-            }
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                foreach (Runtime kinect in Runtime.Kinects)
-                {
-                    if (kinect.Status == KinectStatus.Connected)
-                    {
-                        kinectRuntime = kinect;
-                        break;
-                    }
-                }
-
-                if (Runtime.Kinects.Count == 0)
-                    MessageBox.Show("No Kinect Found");
-                else
-                    Initialize();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Clean();
-        }
-
     }
 }

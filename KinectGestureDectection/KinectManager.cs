@@ -9,96 +9,201 @@ using Kinect.Toolbox;
 
 namespace KinectGestureDectection
 {
+    /// <summary>
+    /// This class manages Kinect devices attatched to the system.
+    /// </sumary>
+    /// 
+    /// It handles all initialization, processing and disposal.
+    /// The manager will find the first Kinect connected and use the first
+    /// skeleton found for all processing.  GestureDetectors, PostureDetectors
+    /// and ICursorUpdatables can be swapped in on the fly.  Changing the 
+    /// CurrentState property will determine which actions are performed when 
+    /// a new recieved from the device.
     sealed class KinectManager : IDisposable
     {
-        private SkeletonDisplayManager skeletonDisplayManager;
-        private PathSelectionComponent pathSelector;
-        private CombatPostureDetector postureDectector;
-        private SimpleSlashGestureDetector gestureDetector;
-        private ColorStreamManager displayStreamManager;
+        // WHen non-null, is the first connected Kinect device.
         private Runtime kinect;
+
+        // Draws skeletons to the given skeleton canvas.
+        private SkeletonDisplayManager skeletonDisplayManager;
+
+        // Displays the RGB video stream to the given Image.
+        private ColorStreamManager displayStreamManager;
+
+        // Static canvas where cursors will be relative to.
         private Canvas canvas;
+
+        // Canvas to draw the skeleton, cleared every frame.
         private Canvas skeletonCanvas;
+
+        // Image to draw RGB frames from the device.
         private Image display;
 
+        // Possible states of operation.
         public enum InputState
         {
             Idle,
-            CombatPosture,
-            CombatGesture,
-            PathSelection,
+            Posture,
+            Gesture,
+            Cursor,
         }
 
-        private InputState currentState;
-        public InputState CurrentState
-        {
-            get { return this.currentState; }
-            set
-            {
-                this.currentState = value;
-                switch (currentState)
-                {
-                    case InputState.PathSelection:
-                        pathSelector.IsEnabled = true;
-                        break;
-                }
-            }
-        }
-        public bool TrackingSkeleton { get; private set; }
+        /// <summary>
+        /// Current state of the manager.
+        /// </summary>
+        public InputState CurrentState { get; set; }
 
-        public event Action<string> CombatGestureDectected;
-        public event Action<PathSelectionComponent.PathDirection> PathSelected;
+        /// <summary>
+        /// Returns true when a Kinect device is currently connected.
+        /// </summary>
+        public bool IsKinectConnected { get; private set; }
+
+        /// <summary>
+        /// Returns true when a skeleton is currently tracked.
+        /// </summary>
+        public bool IsSkeletonTracked { get; private set; }
+
+        /// <summary>
+        /// Set true or false to draw skeleton to skeleton canvas.
+        /// </summary>
+        public bool IsSkeletonVisible { get; set; }
+
+        /// <summary>
+        /// Fires when a new Kinect device is found when there was previously none.
+        /// </summary>
+        public event Action<Runtime> KinectConnected;
+
+        /// <summary>
+        /// Fires when a new skeleton is found when there was previously none.
+        /// </summary>
         public event Action SkeletonFound;
+
+        /// <summary>
+        /// Fires when the previously tracked skeleton is lost.
+        /// </summary>
         public event Action SkeletonLost;
 
-        public KinectManager(Runtime kinect, Image display, Canvas canvas, Canvas skeletonCanvas)
+        /// <summary>
+        /// Gesture detector to be used during InputState.Gesture
+        /// </summary>
+        public GestureDetector GestureDetector { get; set; }
+
+        /// <summary>
+        /// Posture detector to be used during InputState.Posture
+        /// </summary>
+        public PostureDetector PostureDetector { get; set; }
+
+        /// <summary>
+        /// Cursor object to be updated during InputState.Cursor
+        /// </summary>
+        public ICursorUpdatable CursorUpdatable { get; set; }
+
+        /// <summary>
+        /// Creates a new KinectManager instance.
+        /// </summary>
+        /// <param name="display">Image to display RGB stream</param>
+        /// <param name="canvas">Canvas that relates to posture, gestures and cursors</param>
+        /// <param name="skeletonCanvas">Canvas to draw skeletons</param>
+        public KinectManager(Image display, Canvas canvas, Canvas skeletonCanvas)
         {
-            this.kinect = kinect;
             this.display = display;
             this.canvas = canvas;
             this.skeletonCanvas = skeletonCanvas;
+        }
+
+        /// <summary>
+        /// Initialize the manager for use.
+        /// </summary>
+        public void Initialize()
+        {
+            if (kinect != null)
+                return;
+            
+            kinect = Runtime.Kinects.Where(k => k.Status == KinectStatus.Connected).FirstOrDefault();
+
+            if (kinect == null)
+                return;
+            
+            this.kinect.Initialize(RuntimeOptions.UseSkeletalTracking | RuntimeOptions.UseColor);
+            this.kinect.VideoStream.Open(ImageStreamType.Video, 2, ImageResolution.Resolution640x480, ImageType.Color);
 
             this.skeletonDisplayManager = new SkeletonDisplayManager(kinect.SkeletonEngine, skeletonCanvas);
-
-            this.pathSelector = new PathSelectionComponent(canvas);
-            this.pathSelector.PathSelected += new EventHandler<PathSelectionComponent.PathSelectedEventArgs>(pathSelector_PathSelected);
-            this.pathSelector.IsEnabled = false;
-
-            this.postureDectector = new CombatPostureDetector();
-            this.postureDectector.PostureDetected += new Action<string>(postureDectector_PostureDetected);
-
-            this.gestureDetector = new SimpleSlashGestureDetector();
-            this.gestureDetector.OnGestureDetected += new Action<string>(gestureDetector_OnGestureDetected);
-            this.gestureDetector.TraceTo(canvas, System.Windows.Media.Color.FromRgb(255, 0, 0));
-            this.gestureDetector.MinimalPeriodBetweenGestures = 2000;
+            this.IsSkeletonVisible = true;
 
             this.displayStreamManager = new ColorStreamManager();
 
             kinect.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(kinect_SkeletonFrameReady);
             kinect.VideoFrameReady += new EventHandler<ImageFrameReadyEventArgs>(kinect_VideoFrameReady);
 
-            this.CurrentState = InputState.Idle;
+            var handler = KinectConnected;
+            if (handler != null)
+                handler(kinect);
         }
 
+        /// <summary>
+        /// Copies the RGB frame onto the display.
+        /// </summary>
         private void kinect_VideoFrameReady(object sender, ImageFrameReadyEventArgs e)
         {
             display.Source = displayStreamManager.Update(e);
         }
 
+        /// <summary>
+        /// Disposes of all internal resources used by this manager.
+        /// </summary>
         public void Dispose()
         {
-            kinect.SkeletonFrameReady -= kinect_SkeletonFrameReady;
-            kinect.VideoFrameReady -= kinect_VideoFrameReady;
+            if (IsKinectConnected)
+            {
+                kinect.SkeletonFrameReady -= kinect_SkeletonFrameReady;
+                kinect.VideoFrameReady -= kinect_VideoFrameReady;
+                kinect.Uninitialize();
+                GestureDetector = null;
+                PostureDetector = null;
+                CursorUpdatable = null;
+                kinect = null;
+            }
         }
 
-        public void SetPathEnabled(PathSelectionComponent.PathDirection direction, bool isEnabled)
+        /// <summary>
+        /// Updates the posture detector with the first skeleton found.
+        /// </summary>
+        /// <param name="skeleton">First skeleton</param>
+        private void updatePosture(SkeletonData skeleton)
         {
-            pathSelector.SetTargetEnabled(direction, isEnabled);
+            var postureDetector = PostureDetector;
+            if (postureDetector != null && skeleton.TrackingState == SkeletonTrackingState.Tracked)
+                postureDetector.TrackPostures(skeleton);
         }
 
+        /// <summary>
+        /// Updates the gesture detector with the first skeleton found 
+        /// using the position of the right hand.
+        /// </summary>
+        /// <param name="skeleton"></param>
+        private void updateGesture(SkeletonData skeleton)
+        {
+            var gestureDetector = GestureDetector;
+            Joint rightHand = skeleton.Joints[JointID.HandRight];
+            if (gestureDetector != null && rightHand.TrackingState == JointTrackingState.Tracked)
+                gestureDetector.Add(rightHand.Position, kinect.SkeletonEngine);
+        }
+        
+        // Internal buffer used to store cursor locations for updating.
         private Point[] cursors = new Point[2];
-        private void updatePathSelection(SkeletonData skeleton)
+
+        /// <summary>
+        /// Updates the cursors locations, passing them to the ICursorUpdatables.
+        /// Includes the locations of the right and left hands of the first 
+        /// skeleton found only.
+        /// </summary>
+        /// <param name="skeleton">First skeleton found</param>
+        private void updateCursors(SkeletonData skeleton)
         {
+            var cursorUpdatable = CursorUpdatable;
+            if (cursorUpdatable == null)
+                return;
+
             float x = 0, y = 0;
 
             kinect.SkeletonEngine.SkeletonToDepthImage(skeleton.Joints[JointID.HandLeft].Position, out x, out y);
@@ -107,53 +212,10 @@ namespace KinectGestureDectection
             kinect.SkeletonEngine.SkeletonToDepthImage(skeleton.Joints[JointID.HandRight].Position, out x, out y);
             cursors[1] = new Point(canvas.ActualWidth * x, canvas.ActualHeight * y);
 
-            pathSelector.UpdateCursors(cursors);
+            cursorUpdatable.UpdateCursors(cursors);
         }
 
-        private void updateCombatPosture(SkeletonData skeleton)
-        {
-            if(skeleton.TrackingState == SkeletonTrackingState.Tracked)
-                postureDectector.TrackPostures(skeleton);
-        }
-
-        private void updateCombatGesture(SkeletonData skeleton)
-        {
-            Joint rightHand = skeleton.Joints[JointID.HandRight];
-            if (rightHand.TrackingState == JointTrackingState.Tracked)
-               gestureDetector.Add(rightHand.Position, kinect.SkeletonEngine);
-        }
-
-        private void gestureDetector_OnGestureDetected(string gesture)
-        {
-            if (CurrentState == InputState.CombatGesture)
-            {
-                CurrentState = InputState.Idle;
-                var handler = CombatGestureDectected;
-                if (handler != null)
-                    handler(gesture);
-            }
-        }
-
-        private void postureDectector_PostureDetected(string posture)
-        {
-            if (CurrentState == InputState.CombatPosture)
-            {
-                CurrentState = InputState.CombatGesture;
-            }
-        }
-
-        private void pathSelector_PathSelected(object sender, PathSelectionComponent.PathSelectedEventArgs e)
-        {
-            if (CurrentState == InputState.PathSelection)
-            {
-                pathSelector.IsEnabled = false;
-                CurrentState = InputState.Idle;
-                var handler = PathSelected;
-                if (handler != null)
-                    handler(e.Direction);
-            }
-        }
-
+        // Called each skeleton frame, dispataches appropriate update based on current state.
         private void kinect_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
             if (e.SkeletonFrame == null)
@@ -164,32 +226,33 @@ namespace KinectGestureDectection
                 if (skeleton.TrackingState != SkeletonTrackingState.Tracked)
                     continue;
 
-                if (!TrackingSkeleton)
+                if (!IsSkeletonTracked)
                 {
                     var handler = SkeletonFound;
                     if (handler != null)
                         handler();
                 }
 
-                skeletonDisplayManager.Draw(e.SkeletonFrame);
+                if(IsSkeletonVisible)
+                    skeletonDisplayManager.Draw(e.SkeletonFrame);
 
                 switch (CurrentState)
                 {
-                    case InputState.PathSelection:
-                        updatePathSelection(skeleton);
+                    case InputState.Cursor:
+                        updateCursors(skeleton);
                         return;
-                    case InputState.CombatPosture:
-                        updateCombatPosture(skeleton);
+                    case InputState.Posture:
+                        updatePosture(skeleton);
                         return;
-                    case InputState.CombatGesture:
-                        updateCombatGesture(skeleton);
+                    case InputState.Gesture:
+                        updateGesture(skeleton);
                         return;
                     default:
                         return;
                 }
             }
 
-            if (TrackingSkeleton)
+            if (IsSkeletonTracked)
             {
                 var handler = SkeletonLost;
                 if (handler != null)
