@@ -50,7 +50,16 @@ namespace KinectGestureDectection
         {
             // Ideally, we would a diverse sequence of turns, but for now, 
             // just have the game ask for horizontal slashes each turn
-            currentTurn = new HorizontalSlashTurn();
+            Random gen = new Random();
+            int result = gen.Next(2);
+            if (result == 0)
+            {
+                currentTurn = new LeftSlashTurn();
+            }
+            else
+            {
+                currentTurn = new RightSlashTurn();
+            }
         }
     }
 
@@ -66,7 +75,16 @@ namespace KinectGestureDectection
         {
             // Ideally, we would a diverse sequence of turns, but for now, 
             // just have the game ask for horizontal slashes each turn
-            currentTurn = new HarmlessHorizontalTurn();
+            Random gen = new Random();
+            int result = gen.Next(2);
+            if (result == 0)
+            {
+                currentTurn = new HarmlessLeftSlashTurn();
+            }
+            else
+            {
+                currentTurn = new HarmlessRightSlashTurn();
+            }
         }
     }
 }

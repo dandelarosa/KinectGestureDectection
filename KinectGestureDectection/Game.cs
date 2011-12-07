@@ -12,8 +12,8 @@ namespace KinectGestureDectection
         private Room currentRoom;
 
         private Room[,] gameMap = new Room[3,3];
-        private int mapPositionX = 1;
-        private int mapPositionY = 0;
+        public int mapPositionX = 1;
+        public int mapPositionY = 0;
 
         public int currentPlayerLife = 100;
         public int maxPlayerLife = 100;
@@ -81,12 +81,32 @@ namespace KinectGestureDectection
             currentPlayerLife -= currentRoom.enemyStrength;
         }
 
-        public void GoInDirection(string direction)
+        public void GoInDirection(PathSelectionComponent.PathDirection direction)
         {
-            // TODO
-            // This function will look for a room placed in the selected 
-            // direction from the current room and go there
-            // e.g. currentRoom = <something>;
+            switch (direction)
+            {
+                case PathSelectionComponent.PathDirection.Back:
+                    {
+                        if (mapPositionY > 0) mapPositionY--;
+                    }
+                    break;
+                case PathSelectionComponent.PathDirection.Forward:
+                    {
+                        if (mapPositionY < 2) mapPositionY++;
+                    }
+                    break;
+                case PathSelectionComponent.PathDirection.Left:
+                    {
+                        if (mapPositionX > 0) mapPositionX--;
+                    }
+                    break;
+                case PathSelectionComponent.PathDirection.Right:
+                    {
+                        if (mapPositionX < 2) mapPositionX++;
+                    }
+                    break;
+            }
+            currentRoom = gameMap[mapPositionX, mapPositionY];
             return;
         }
     }

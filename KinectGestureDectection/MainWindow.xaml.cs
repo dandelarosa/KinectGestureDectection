@@ -56,7 +56,11 @@ namespace KinectGestureDectection
         void pathSelector_PathSelected(object sender, PathSelectionComponent.PathSelectedEventArgs e)
         {
             pathSelector.IsEnabled = false;
-            MessageBox.Show(e.Direction.ToString());
+            //MessageBox.Show(e.Direction.ToString());
+            // Go to the next room
+            game.GoInDirection(e.Direction);
+            // Start the room
+            NextTurn();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

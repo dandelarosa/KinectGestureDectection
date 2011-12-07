@@ -13,7 +13,7 @@ namespace KinectGestureDectection
     /// Possible directions are members of PathDirection.
     /// The directions are visualized as arrows around the screen.
     /// </summary>
-    class PathSelectionComponent : ICursorUpdatable
+    public class PathSelectionComponent : ICursorUpdatable
     {
         public enum PathDirection
         {

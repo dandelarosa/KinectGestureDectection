@@ -12,16 +12,41 @@ namespace KinectGestureDectection
         int GetDuration();
     }
 
-    class HorizontalSlashTurn : Turn
+    class LeftSlashTurn : Turn
     {
         public string GetPrompt()
         {
-            return "Slash Horizontal";
+            return "Slash Left";
         }
 
         public bool EnterGesture(string gesture)
         {
-            if (gesture == "SlashLeftToRight" || gesture == "SlashRightToLeft")
+            if (gesture == "SlashRightToLeft")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public int GetDuration()
+        {
+            return 5;
+        }
+    }
+
+    class RightSlashTurn : Turn
+    {
+        public string GetPrompt()
+        {
+            return "Slash Right";
+        }
+
+        public bool EnterGesture(string gesture)
+        {
+            if (gesture == "SlashLeftToRight")
             {
                 return true;
             }
@@ -47,6 +72,56 @@ namespace KinectGestureDectection
         public bool EnterGesture(string gesture)
         {
             if (gesture == "SlashLeftToRight" || gesture == "SlashRightToLeft")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public int GetDuration()
+        {
+            return 0;
+        }
+    }
+
+    class HarmlessLeftSlashTurn : Turn
+    {
+        public string GetPrompt()
+        {
+            return "Slash Left";
+        }
+
+        public bool EnterGesture(string gesture)
+        {
+            if (gesture == "SlashRightToLeft")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public int GetDuration()
+        {
+            return 0;
+        }
+    }
+
+    class HarmlessRightSlashTurn : Turn
+    {
+        public string GetPrompt()
+        {
+            return "Slash Right";
+        }
+
+        public bool EnterGesture(string gesture)
+        {
+            if (gesture == "SlashLeftToRight")
             {
                 return true;
             }
