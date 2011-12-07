@@ -142,6 +142,14 @@ namespace KinectGestureDectection
             if (nextPrompt == "Choose direction to go to")
             {
                 pathSelector.IsEnabled = true;
+                if (game.mapPositionX == 0)
+                    pathSelector.SetTargetEnabled(PathSelectionComponent.PathDirection.Left, false);
+                else if (game.mapPositionX == 2)
+                    pathSelector.SetTargetEnabled(PathSelectionComponent.PathDirection.Right, false);
+                if (game.mapPositionY == 0)
+                    pathSelector.SetTargetEnabled(PathSelectionComponent.PathDirection.Back, false);
+                else if (game.mapPositionY == 2)
+                    pathSelector.SetTargetEnabled(PathSelectionComponent.PathDirection.Forward, false);
                 kinectManager.CurrentState = KinectManager.InputState.Cursor;
                 PrintLine("Choose direction to go to");
             }
