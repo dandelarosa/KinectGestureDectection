@@ -21,6 +21,8 @@ namespace KinectGestureDectection
         private System.Windows.Threading.DispatcherTimer dispatcherTimer =
                 new System.Windows.Threading.DispatcherTimer();
 
+        private string nextPrompt = String.Empty;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,12 +32,13 @@ namespace KinectGestureDectection
         {
             kinectManager.CurrentState = KinectManager.InputState.Gesture;
             attackIndicator.Start(AttackIndicator.AttackType.RightToLeft);
+            PrintLine(nextPrompt);
         }
 
         void GestureDetector_OnGestureDetected(string gesture)
         {
-            System.Diagnostics.Debug.WriteLine(DateTime.Now.Ticks + " " + gesture);
-            PrintLine(DateTime.Now.Ticks + " " + gesture);
+            //System.Diagnostics.Debug.WriteLine(DateTime.Now.Ticks + " " + gesture);
+            //PrintLine(DateTime.Now.Ticks + " " + gesture);
 
             // Don't do anything to the game if it hasn't started yet
             if (!isGameStarted) return;
@@ -53,6 +56,7 @@ namespace KinectGestureDectection
         void pathSelector_PathSelected(object sender, PathSelectionComponent.PathSelectedEventArgs e)
         {
             pathSelector.IsEnabled = false;
+            MessageBox.Show(e.Direction.ToString());
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -66,6 +70,7 @@ namespace KinectGestureDectection
             pathSelector = new PathSelectionComponent(mainCanvas);
             pathSelector.IsEnabled = false;
             pathSelector.PathSelected += new EventHandler<PathSelectionComponent.PathSelectedEventArgs>(pathSelector_PathSelected);
+            kinectManager.KinectConnected += kinectManager_KinectConnected;
             kinectManager.PostureDetector = new CombatPostureDetector();
             kinectManager.PostureDetector.PostureDetected += new Action<string>(PostureDetector_PostureDetected);
             kinectManager.GestureDetector = new SimpleSlashGestureDetector();
@@ -84,7 +89,7 @@ namespace KinectGestureDectection
             kinectManager.Dispose();
         }
 
-        void kinectManager_KinectFound(Runtime kinect)
+        void kinectManager_KinectConnected(Runtime kinect)
         {
             PrintLine("Waiting to register skeleton...");
         }
@@ -112,13 +117,10 @@ namespace KinectGestureDectection
             // Tell the game that it's the next turn
             game.NextTurn();
 
-            string prompt = game.GetPrompt();
-
-            // Print Prompt
-            PrintLine(prompt);
+            nextPrompt = game.GetPrompt();
 
             // DEBUG/TEMP FLOW HERE
-            if (prompt == "Choose direction to go to")
+            if (nextPrompt == "Choose direction to go to")
             {
                 pathSelector.IsEnabled = true;
                 kinectManager.CurrentState = KinectManager.InputState.Cursor;
@@ -126,6 +128,7 @@ namespace KinectGestureDectection
             else
             {
                 kinectManager.CurrentState = KinectManager.InputState.Posture;
+                PrintLine("Bring your hands together to swing your sword.");
             }
 
             //  DispatcherTimer setup

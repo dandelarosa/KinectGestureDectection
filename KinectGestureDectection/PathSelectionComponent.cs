@@ -71,8 +71,7 @@ namespace KinectGestureDectection
 
         public void SetTargetEnabled(PathDirection direction, bool isEnabled)
         {
-            if(IsEnabled)
-                targets[direction].IsEnabled =  isEnabled;
+            targets[direction].IsEnabled =  isEnabled;
         }
 
         public PathSelectionComponent(Canvas canvas)

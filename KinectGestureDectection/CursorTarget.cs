@@ -20,7 +20,7 @@ namespace KinectGestureDectection
         private int height;
 
         // The number of consecutive times a cursor must remain in the target area.
-        private int numHitsForSelection = 25;
+        private int numHitsForSelection = 30;
         private int previousPositiveChecks = 0;
 
         // Helper to create the bounding rectangle when center or radius change.

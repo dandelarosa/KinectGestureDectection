@@ -30,7 +30,7 @@ namespace KinectGestureDectection
             this.Shape.Fill = this.NonSelectedFill = Brushes.LightBlue;
             this.Shape.Stroke = this.NonSelectedStroke = Brushes.WhiteSmoke;
             this.SelectedFill = Brushes.OrangeRed;
-            this.NonSelectedFill = Brushes.OrangeRed;
+            this.SelectedStroke = Brushes.OrangeRed;
             SetBounds(center, width, height);
         }
 
@@ -51,7 +51,10 @@ namespace KinectGestureDectection
                 else
                 {
                     if (containsShape)
+                    {
                         canvas.Children.Remove(Shape);
+                        onCursorLeave();
+                    }
                 }
             }
         }
