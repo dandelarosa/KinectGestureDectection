@@ -53,4 +53,20 @@ namespace KinectGestureDectection
             currentTurn = new HorizontalSlashTurn();
         }
     }
+
+    public class HarmlessObstacleRoom : Room
+    {
+        public HarmlessObstacleRoom()
+        {
+            currentEnemyLife = 30;
+            maxEnemyLife = 30;
+            enemyStrength = 0;
+        }
+        public override void NextTurn()
+        {
+            // Ideally, we would a diverse sequence of turns, but for now, 
+            // just have the game ask for horizontal slashes each turn
+            currentTurn = new HarmlessHorizontalTurn();
+        }
+    }
 }
