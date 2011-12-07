@@ -39,6 +39,10 @@ namespace KinectGestureDectection
             {
                 attackIndicator.Start(AttackIndicator.AttackType.LeftToRight);
             }
+            else if (nextPrompt == "Slash Down")
+            {
+                attackIndicator.Start(AttackIndicator.AttackType.UpToDown);
+            }
             PrintLine(nextPrompt);
         }
 

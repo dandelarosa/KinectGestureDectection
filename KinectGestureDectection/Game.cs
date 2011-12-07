@@ -26,7 +26,7 @@ namespace KinectGestureDectection
             gameMap[1, 0] = new HarmlessObstacleRoom();
             gameMap[2, 0] = new HarmlessObstacleRoom();
             gameMap[0, 1] = new HarmlessObstacleRoom();
-            gameMap[1, 1] = new SampleRoom();
+            gameMap[1, 1] = new HarmlessObstacleRoom();
             gameMap[2, 1] = new HarmlessObstacleRoom();
             gameMap[0, 2] = new SampleRoom();
             gameMap[1, 2] = new SampleRoom();
@@ -81,33 +81,37 @@ namespace KinectGestureDectection
             currentPlayerLife -= currentRoom.enemyStrength;
         }
 
-        public void GoInDirection(PathSelectionComponent.PathDirection direction)
+        public bool GoInDirection(PathSelectionComponent.PathDirection direction)
         {
             switch (direction)
             {
                 case PathSelectionComponent.PathDirection.Back:
                     {
                         if (mapPositionY > 0) mapPositionY--;
+                        else return false;
                     }
                     break;
                 case PathSelectionComponent.PathDirection.Forward:
                     {
                         if (mapPositionY < 2) mapPositionY++;
+                        else return false;
                     }
                     break;
                 case PathSelectionComponent.PathDirection.Left:
                     {
                         if (mapPositionX > 0) mapPositionX--;
+                        else return false;
                     }
                     break;
                 case PathSelectionComponent.PathDirection.Right:
                     {
                         if (mapPositionX < 2) mapPositionX++;
+                        else return false;
                     }
                     break;
             }
             currentRoom = gameMap[mapPositionX, mapPositionY];
-            return;
+            return true;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace KinectGestureDectection
 
         public int GetDuration()
         {
-            return 5;
+            return 8;
         }
     }
 
@@ -58,7 +58,32 @@ namespace KinectGestureDectection
 
         public int GetDuration()
         {
-            return 5;
+            return 8;
+        }
+    }
+
+    class DownSlashTurn : Turn
+    {
+        public string GetPrompt()
+        {
+            return "Slash Down";
+        }
+
+        public bool EnterGesture(string gesture)
+        {
+            if (gesture == "SlashUpToDown")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public int GetDuration()
+        {
+            return 8;
         }
     }
 
@@ -122,6 +147,31 @@ namespace KinectGestureDectection
         public bool EnterGesture(string gesture)
         {
             if (gesture == "SlashLeftToRight")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public int GetDuration()
+        {
+            return 0;
+        }
+    }
+
+    class HarmlessDownSlashTurn : Turn
+    {
+        public string GetPrompt()
+        {
+            return "Slash Down";
+        }
+
+        public bool EnterGesture(string gesture)
+        {
+            if (gesture == "SlashUpToDown")
             {
                 return true;
             }
