@@ -31,7 +31,14 @@ namespace KinectGestureDectection
         void PostureDetector_PostureDetected(string obj)
         {
             kinectManager.CurrentState = KinectManager.InputState.Gesture;
-            attackIndicator.Start(AttackIndicator.AttackType.RightToLeft);
+            if (nextPrompt == "Slash Left")
+            {
+                attackIndicator.Start(AttackIndicator.AttackType.RightToLeft);
+            }
+            else if (nextPrompt == "Slash Right")
+            {
+                attackIndicator.Start(AttackIndicator.AttackType.LeftToRight);
+            }
             PrintLine(nextPrompt);
         }
 
@@ -58,7 +65,8 @@ namespace KinectGestureDectection
             pathSelector.IsEnabled = false;
             //MessageBox.Show(e.Direction.ToString());
             // Go to the next room
-            game.GoInDirection(e.Direction);
+            bool didGo = game.GoInDirection(e.Direction);
+            if (!didGo) PrintLine("Invalid Direction.");
             // Start the room
             NextTurn();
         }
@@ -111,6 +119,9 @@ namespace KinectGestureDectection
 
         private void NextTurn()
         {
+            // Turn off attack indicator
+            attackIndicator.Stop();
+
             // Display current life 
             playerLife.Text = "Player Life: " + game.currentPlayerLife + "/" + game.maxPlayerLife;
             enemyLife.Text = "Enemy Life: " + game.GetCurrentEnemyLife() + "/" + game.GetMaxEnemyLife();
@@ -128,6 +139,7 @@ namespace KinectGestureDectection
             {
                 pathSelector.IsEnabled = true;
                 kinectManager.CurrentState = KinectManager.InputState.Cursor;
+                PrintLine("Choose direction to go to");
             }
             else
             {
@@ -161,7 +173,7 @@ namespace KinectGestureDectection
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             // Tell the game that time is up
-            PrintLine("Time's up.");
+            PrintLine("Too Late!");
 
             // Hurt the player
             game.TimeUp();
