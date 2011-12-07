@@ -52,7 +52,7 @@ namespace KinectGestureDectection
         private void createArrow(PathDirection direction, Point center, int radius, double rotationAngle)
         {
             var arrow = new ArrowCursorTarget(canvas, center, radius);
-            arrow.LayoutTransform = new RotateTransform(rotationAngle, center.X, center.Y);
+            arrow.Shape.LayoutTransform = new RotateTransform(rotationAngle, center.X, center.Y);
             arrow.CursorSelect += () => onPathSelected(direction);
             targets.Add(direction, arrow);
         }

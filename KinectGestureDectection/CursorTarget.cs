@@ -16,18 +16,20 @@ namespace KinectGestureDectection
     {
         // Defines the rectangular target area.
         private Point center;
-        private int radius;
+        private int width;
+        private int height;
 
         // The number of consecutive times a cursor must remain in the target area.
         private int numHitsForSelection = 25;
         private int previousPositiveChecks = 0;
 
         // Helper to create the bounding rectangle when center or radius change.
-        protected virtual void SetBounds(Point center, int radius)
+        protected virtual void SetBounds(Point center, int width, int height)
         {
             this.center = center;
-            this.radius = radius;
-            this.Bounds = new Rect(center.X - radius, center.Y - radius, radius * 2, radius * 2);
+            this.width = width;
+            this.height = height;
+            this.Bounds = new Rect(center.X - width, center.Y - height, width * 2, height * 2);
         }
 
         /// <summary>
@@ -94,17 +96,27 @@ namespace KinectGestureDectection
         public Point Center
         {
             get { return this.center; }
-            set { SetBounds(value, radius); }
+            set { SetBounds(value, width, height); }
         }
 
         /// <summary>
-        /// The length and width of the target area.
+        /// The width of the target area.
         /// </summary>
-        public int Radius
+        public int Width
         {
-            get { return this.radius; }
-            set { SetBounds(center, value); }
+            get { return this.width; }
+            set { SetBounds(center, value, height); }
         }
+
+        /// <summary>
+        /// The height of the target area.
+        /// </summary>
+        public int Height
+        {
+            get { return this.height; }
+            set { SetBounds(center, width, value); }
+        }
+
 
         /// <summary>
         /// Number of consecutive hits required to select the target.
@@ -119,15 +131,22 @@ namespace KinectGestureDectection
             }
         }
 
+        /// <summary>
+        /// Initializes a new CursorTarget.
+        /// </summary>
+        public CursorTarget() 
+        { 
+            this.IsEnabled = false; 
+        }
 
         /// <summary>
         /// Initializes a new CursorTarget.
         /// </summary>
         /// <param name="center">Center of the target area.</param>
         /// <param name="radius">Length and width of the target area.</param>
-        public CursorTarget(Point center, int radius)
+        public CursorTarget(Point center, int width, int height)
         {
-            SetBounds(center, radius);
+            SetBounds(center, width, height);
             this.IsEnabled = true;
         }
 

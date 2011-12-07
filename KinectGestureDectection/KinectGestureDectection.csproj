@@ -72,6 +72,7 @@
     <Compile Include="KinectManager.cs" />
     <Compile Include="PathSelectionComponent.cs" />
     <Compile Include="Room.cs" />
+    <Compile Include="ShapeCursorTarget.cs" />
     <Compile Include="SimpleSwipeGestureDetector.cs" />
     <Compile Include="Turn.cs" />
     <Page Include="MainWindow.xaml">
