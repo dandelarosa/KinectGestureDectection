@@ -36,4 +36,29 @@ namespace KinectGestureDectection
             return 5;
         }
     }
+
+    class HarmlessHorizontalTurn : Turn
+    {
+        public string GetPrompt()
+        {
+            return "Slash Horizontal";
+        }
+
+        public bool EnterGesture(string gesture)
+        {
+            if (gesture == "SlashLeftToRight" || gesture == "SlashRightToLeft")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public int GetDuration()
+        {
+            return 0;
+        }
+    }
 }

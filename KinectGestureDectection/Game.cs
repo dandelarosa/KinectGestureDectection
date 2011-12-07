@@ -8,12 +8,31 @@ namespace KinectGestureDectection
     public class Game
     {
         // TODO set this to the first room in the game
-        private Room currentRoom = new SampleRoom();
+        //private Room currentRoom = new SampleRoom();
+        private Room currentRoom;
+
+        private Room[,] gameMap = new Room[3,3];
+        private int mapPositionX = 1;
+        private int mapPositionY = 0;
 
         public int currentPlayerLife = 100;
         public int maxPlayerLife = 100;
 
         private int playerStrength = 10;
+
+        public Game()
+        {
+            gameMap[0, 0] = new HarmlessObstacleRoom();
+            gameMap[1, 0] = new HarmlessObstacleRoom();
+            gameMap[2, 0] = new HarmlessObstacleRoom();
+            gameMap[0, 1] = new HarmlessObstacleRoom();
+            gameMap[1, 1] = new SampleRoom();
+            gameMap[2, 1] = new HarmlessObstacleRoom();
+            gameMap[0, 2] = new SampleRoom();
+            gameMap[1, 2] = new SampleRoom();
+            gameMap[2, 2] = new SampleRoom();
+            currentRoom = gameMap[mapPositionX, mapPositionY];
+        }
 
         public void NextTurn()
         {
