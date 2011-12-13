@@ -71,6 +71,7 @@ namespace KinectGestureDectection
             //MessageBox.Show(e.Direction.ToString());
             // Go to the next room
             bool didGo = game.GoInDirection(e.Direction);
+            if (didGo) mapDisplay.Hide();
             if (!didGo) PrintLine("Invalid Direction.");
             // Start the room
             NextTurn();
@@ -143,6 +144,7 @@ namespace KinectGestureDectection
             // DEBUG/TEMP FLOW HERE
             if (nextPrompt == "Choose direction to go to")
             {
+                mapDisplay.Show();
                 pathSelector.IsEnabled = true;
                 if (game.mapPositionX == 0)
                     pathSelector.SetTargetEnabled(PathSelectionComponent.PathDirection.Left, false);
