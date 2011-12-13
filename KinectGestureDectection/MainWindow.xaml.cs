@@ -15,6 +15,7 @@ namespace KinectGestureDectection
         private KinectManager kinectManager;
         private AttackIndicator attackIndicator;
         private PathSelectionComponent pathSelector;
+        private MapDisplay mapDisplay;
         private Game game = new Game();
         private bool isGameStarted = false;
 
@@ -98,6 +99,7 @@ namespace KinectGestureDectection
 
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             attackIndicator = new AttackIndicator(mainCanvas);
+            mapDisplay = new MapDisplay(mainCanvas, game);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

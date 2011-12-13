@@ -11,7 +11,9 @@ namespace KinectGestureDectection
         //private Room currentRoom = new SampleRoom();
         private Room currentRoom;
 
-        private Room[,] gameMap = new Room[3,3];
+        public const int mapWidth = 3;
+        public const int mapHeight = 3;
+        public Room[,] gameMap = new Room[mapWidth, mapHeight];
         public int mapPositionX = 1;
         public int mapPositionY = 0;
 

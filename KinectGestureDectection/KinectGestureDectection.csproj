@@ -70,6 +70,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="ICursorUpdatable.cs" />
     <Compile Include="KinectManager.cs" />
+    <Compile Include="MapDisplay.cs" />
     <Compile Include="PathSelectionComponent.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="ShapeCursorTarget.cs" />
