@@ -19,10 +19,12 @@ namespace KinectGestureDectection
         private Game game = new Game();
         private bool isGameStarted = false;
 
+
         private System.Windows.Threading.DispatcherTimer dispatcherTimer =
                 new System.Windows.Threading.DispatcherTimer();
 
         private string nextPrompt = String.Empty;
+        private SimpleSlashGestureDetector slashDetector = new SimpleSlashGestureDetector();
 
         public MainWindow()
         {
@@ -34,15 +36,18 @@ namespace KinectGestureDectection
             kinectManager.CurrentState = KinectManager.InputState.Gesture;
             if (nextPrompt == "Slash Left")
             {
-                attackIndicator.Start(AttackIndicator.AttackType.RightToLeft);
+                attackIndicator.Start(AttackType.SlashRightToLeft);
+                slashDetector.AttackType = AttackType.SlashRightToLeft;
             }
             else if (nextPrompt == "Slash Right")
             {
-                attackIndicator.Start(AttackIndicator.AttackType.LeftToRight);
+                attackIndicator.Start(AttackType.SlashLeftToRight);
+                slashDetector.AttackType = AttackType.SlashLeftToRight;
             }
             else if (nextPrompt == "Slash Down")
             {
-                attackIndicator.Start(AttackIndicator.AttackType.UpToDown);
+                attackIndicator.Start(AttackType.SlashUpToDown);
+                slashDetector.AttackType = AttackType.SlashUpToDown;
             }
             PrintLine(nextPrompt);
         }
@@ -91,7 +96,7 @@ namespace KinectGestureDectection
             kinectManager.KinectConnected += kinectManager_KinectConnected;
             kinectManager.PostureDetector = new CombatPostureDetector();
             kinectManager.PostureDetector.PostureDetected += new Action<string>(PostureDetector_PostureDetected);
-            kinectManager.GestureDetector = new SimpleSlashGestureDetector();
+            kinectManager.GestureDetector = slashDetector;
             kinectManager.GestureDetector.OnGestureDetected += new Action<string>(GestureDetector_OnGestureDetected);
             kinectManager.GestureDetector.TraceTo(mainCanvas, System.Windows.Media.Color.FromRgb(255, 0, 0));
             kinectManager.GestureDetector.MinimalPeriodBetweenGestures = 2000;

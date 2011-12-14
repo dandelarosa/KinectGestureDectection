@@ -9,15 +9,15 @@ using System.Windows.Controls;
 
 namespace KinectGestureDectection
 {
+    enum AttackType
+    {
+        SlashUpToDown,
+        SlashLeftToRight,
+        SlashRightToLeft,
+    }
+
     class AttackIndicator
     {
-        public enum AttackType
-        {
-            UpToDown,
-            LeftToRight,
-            RightToLeft,
-        }
-
         private Arrow arrow;
         private Canvas canvas;
         private DoubleAnimation animation;
@@ -56,21 +56,21 @@ namespace KinectGestureDectection
 
             switch (attackType)
             {
-                case AttackType.UpToDown:
+                case AttackType.SlashUpToDown:
                     arrow.LayoutTransform = new RotateTransform(90);
                     Canvas.SetLeft(arrow, canvas.ActualWidth / 2 - arrow.Width / 2);
                     animation.From = arrow.Height;
                     animation.To = arrow.Height + distance;
                     arrow.BeginAnimation(Canvas.TopProperty, animation);  
                     break;
-                case AttackType.LeftToRight:
+                case AttackType.SlashLeftToRight:
                     arrow.LayoutTransform = null;
                     Canvas.SetTop(arrow, canvas.ActualHeight / 2 - arrow.Height / 2);
                     animation.From = arrow.Width;
                     animation.To = arrow.Width + distance;                    
                     arrow.BeginAnimation(Canvas.LeftProperty, animation);  
                     break;
-                case AttackType.RightToLeft:
+                case AttackType.SlashRightToLeft:
                     arrow.LayoutTransform = new RotateTransform(180);
                     Canvas.SetTop(arrow, canvas.ActualHeight / 2 - arrow.Height / 2);
                     animation.From = canvas.ActualWidth - arrow.Width;
