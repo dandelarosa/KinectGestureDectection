@@ -5,10 +5,13 @@
     <Grid>
         <Viewbox Margin="5" Grid.RowSpan="5">
             <StackPanel Orientation="Horizontal">
-                <Grid Width="320" Height="240">
-                    <Image Grid.Row="0" Grid.Column="0" Width="320" Height="240" x:Name="kinectDisplay"></Image>
-                    <Canvas Grid.Row="0" Grid.Column="0" Width="320" Height="240" x:Name="kinectCanvas"></Canvas>
-                </Grid>    
+                <StackPanel>
+                    <TextBlock Text="Kinect Sword Fight: TACOS&#10;Motion Capture for Gaming&#10;Dan Dela Rosa&#10;George Poulos" FontSize="24"/>
+                    <Grid Width="320" Height="240">
+                        <Image Grid.Row="0" Grid.Column="0" Width="320" Height="240" x:Name="kinectDisplay"></Image>
+                        <Canvas Grid.Row="0" Grid.Column="0" Width="320" Height="240" x:Name="kinectCanvas"></Canvas>
+                    </Grid>
+                </StackPanel>
                 <StackPanel>
                     <Grid Width="640" Height="480">
                         <Image Source="/KinectGestureDectection;component/crecy-battlefield.jpg" Width="640" Height="480" x:Name="backgroundImage"></Image>

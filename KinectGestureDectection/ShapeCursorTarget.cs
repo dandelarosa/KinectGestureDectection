@@ -27,7 +27,7 @@ namespace KinectGestureDectection
         {
             this.canvas = canvas;
             this.Shape = shape;
-            this.Shape.Fill = this.NonSelectedFill = Brushes.LightBlue;
+            this.Shape.Fill = this.NonSelectedFill = Brushes.DarkBlue;
             this.Shape.Stroke = this.NonSelectedStroke = Brushes.WhiteSmoke;
             this.SelectedFill = Brushes.OrangeRed;
             this.SelectedStroke = Brushes.OrangeRed;
@@ -70,13 +70,13 @@ namespace KinectGestureDectection
 
         protected override void onCursorEnter()
         {
-            Shape.Stroke = SelectedStroke;
+            Shape.Fill = SelectedFill;
             base.onCursorEnter();
         }
 
         protected override void onCursorSelect()
         {
-            Shape.Fill = SelectedFill;
+            Shape.Stroke = SelectedStroke;
             base.onCursorSelect();
         }
 

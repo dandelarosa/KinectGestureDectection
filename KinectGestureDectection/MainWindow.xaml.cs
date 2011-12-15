@@ -21,6 +21,7 @@ namespace KinectGestureDectection
         private Game game = new Game();
         private bool isGameStarted = false;
 
+        private Point cursorSizeOffset;
 
         private System.Windows.Threading.DispatcherTimer dispatcherTimer =
                 new System.Windows.Threading.DispatcherTimer();
@@ -31,6 +32,7 @@ namespace KinectGestureDectection
         public MainWindow()
         {
             InitializeComponent();
+            cursorSizeOffset = new Point(leftHand.Width / 2, leftHand.Width / 2);
         }
 
         void PostureDetector_PostureDetected(string obj)
@@ -117,16 +119,16 @@ namespace KinectGestureDectection
 
         void kinectManager_CursorUpdate(Point leftHandPosition, Point rightHandPosition)
         {
-            Canvas.SetLeft(leftHand, leftHandPosition.X);
-            Canvas.SetTop(leftHand, leftHandPosition.Y);
-            Canvas.SetLeft(rightHand, rightHandPosition.X);
-            Canvas.SetTop(rightHand, rightHandPosition.Y);
+            Canvas.SetLeft(leftHand, leftHandPosition.X - cursorSizeOffset.X);
+            Canvas.SetTop(leftHand, leftHandPosition.Y - cursorSizeOffset.Y);
+            Canvas.SetLeft(rightHand, rightHandPosition.X - cursorSizeOffset.X);
+            Canvas.SetTop(rightHand, rightHandPosition.Y - cursorSizeOffset.Y);
         }
 
         void kinectManager_GestureUpdate(Point obj)
         {
-            Canvas.SetLeft(swordCursor, obj.X);
-            Canvas.SetTop(swordCursor, obj.Y);
+            Canvas.SetLeft(swordCursor, obj.X - cursorSizeOffset.X);
+            Canvas.SetTop(swordCursor, obj.Y - cursorSizeOffset.Y);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
