@@ -53,21 +53,30 @@ namespace KinectGestureDectection
                             (p1, p2) => p2.Y - p1.Y < 0.01f,
                             (p1, p2) => Math.Abs(p2.Y - p1.Y) > SwipeMinimalLength,
                             SwipeMinimalDuration, SwipeMaximalDuration))
+                    {
                         RaiseGestureDetected("SlashUpToDown");
+                        Entries.Clear();
+                    }
                     return;
                 case KinectGestureDectection.AttackType.SlashLeftToRight:
                     if (ScanPositions(
                             (p1, p2) => p2.X - p1.X > -0.01f,
                             (p1, p2) => Math.Abs(p2.X - p1.X) > SwipeMinimalLength,
                             SwipeMinimalDuration, SwipeMaximalDuration))
+                    {
                         RaiseGestureDetected("SlashLeftToRight");
+                        Entries.Clear();
+                    }
                     return;
                 case KinectGestureDectection.AttackType.SlashRightToLeft:
                     if (ScanPositions(
                             (p1, p2) => p2.X - p1.X < 0.01f,
                             (p1, p2) => Math.Abs(p2.X - p1.X) > SwipeMinimalLength,
                             SwipeMinimalDuration, SwipeMaximalDuration))
+                    {
                         RaiseGestureDetected("SlashRightToLeft");
+                        Entries.Clear();
+                    }
                     return;
             }
 

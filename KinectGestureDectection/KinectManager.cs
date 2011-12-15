@@ -231,48 +231,58 @@ namespace KinectGestureDectection
                 handler(cursors[0], cursors[1]);
         }
 
+        private int trackingIndex = -1;
+
         // Called each skeleton frame, dispataches appropriate update based on current state.
         private void kinect_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
             if (e.SkeletonFrame == null)
                 return;
 
-            foreach (SkeletonData skeleton in e.SkeletonFrame.Skeletons)
+            if (!IsSkeletonTracked)
             {
-                if (skeleton.TrackingState != SkeletonTrackingState.Tracked)
-                    continue;
-
-                if (!IsSkeletonTracked)
+                for (int i = 0; i < e.SkeletonFrame.Skeletons.Length; i++)
                 {
-                    var handler = SkeletonFound;
-                    if (handler != null)
-                        handler();
+                    if (e.SkeletonFrame.Skeletons[i].TrackingState == SkeletonTrackingState.Tracked)
+                    {
+                        trackingIndex = i;
+                        IsSkeletonTracked = true;
+                        var handler = SkeletonFound;
+                        if (handler != null)
+                            handler();
+                        break;
+                    }
                 }
-
-                if(IsSkeletonVisible)
-                    skeletonDisplayManager.Draw(e.SkeletonFrame);
-
-                switch (CurrentState)
-                {
-                    case InputState.Cursor:
-                        updateCursors(skeleton);
-                        return;
-                    case InputState.Posture:
-                        updatePosture(skeleton);
-                        return;
-                    case InputState.Gesture:
-                        updateGesture(skeleton);
-                        return;
-                    default:
-                        return;
-                }
+                if (trackingIndex < 0 || trackingIndex > 6)
+                    return;
             }
 
-            if (IsSkeletonTracked)
+            SkeletonData skeleton = e.SkeletonFrame.Skeletons[trackingIndex];
+            if (skeleton == null || skeleton.TrackingState != SkeletonTrackingState.Tracked)
             {
+                trackingIndex = -1;
+                IsSkeletonTracked = false;
                 var handler = SkeletonLost;
                 if (handler != null)
                     handler();
+            }
+
+            if(IsSkeletonVisible)
+                skeletonDisplayManager.Draw(e.SkeletonFrame);
+
+            switch (CurrentState)
+            {
+                case InputState.Cursor:
+                    updateCursors(skeleton);
+                    return;
+                case InputState.Posture:
+                    updatePosture(skeleton);
+                    return;
+                case InputState.Gesture:
+                    updateGesture(skeleton);
+                    return;
+                default:
+                    return;
             }
         }
     }

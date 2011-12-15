@@ -104,7 +104,7 @@ namespace KinectGestureDectection
             kinectManager.PostureDetector.PostureDetected += new Action<string>(PostureDetector_PostureDetected);
             kinectManager.GestureDetector = slashDetector;
             kinectManager.GestureDetector.OnGestureDetected += new Action<string>(GestureDetector_OnGestureDetected);
-            kinectManager.GestureDetector.TraceTo(mainCanvas, System.Windows.Media.Color.FromRgb(255, 0, 0));
+            //kinectManager.GestureDetector.TraceTo(mainCanvas, System.Windows.Media.Color.FromRgb(255, 0, 0));
             kinectManager.GestureDetector.MinimalPeriodBetweenGestures = 2000;
             kinectManager.GestureUpdate += new Action<Point>(kinectManager_GestureUpdate);
             kinectManager.CursorUpdate += new Action<Point, Point>(kinectManager_CursorUpdate);
