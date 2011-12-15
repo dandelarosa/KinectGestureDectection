@@ -4,24 +4,30 @@
         Title="MainWindow" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
         <Viewbox Margin="5" Grid.RowSpan="5">
-            <Grid Width="800" Height="580" ClipToBounds="True">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition Height="100"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="160"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Image Source="/KinectGestureDectection;component/crecy-battlefield.jpg" Grid.Row="0" Grid.Column="1" Width="640" Height="480" x:Name="backgroundImage"></Image>
-                <Image Source="/KinectGestureDectection;component/knight01.gif" Grid.Row="0" Grid.Column="1" Width="239" Height="284" x:Name="enemyImage"></Image>
-                <Canvas Grid.Row="0" Grid.Column="1" Width="640" Height="480" x:Name="mainCanvas"></Canvas>
-                <Image Grid.Row="0" Grid.Column="0" Width="160" Height="120" x:Name="kinectDisplay"></Image>
-                <Canvas Grid.Row="0" Grid.Column="0" Width="160" Height="120" x:Name="kinectCanvas"></Canvas>
-                <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Width="640" Height="100" x:Name="textScrollView">
-                    <TextBlock Width="640" HorizontalAlignment="Left" x:Name="textBlock1" VerticalAlignment="Top" FontSize="28"/>
-                </ScrollViewer>
-            </Grid>
+            <StackPanel Orientation="Horizontal">
+                <Grid Width="320" Height="240">
+                    <Image Grid.Row="0" Grid.Column="0" Width="320" Height="240" x:Name="kinectDisplay"></Image>
+                    <Canvas Grid.Row="0" Grid.Column="0" Width="320" Height="240" x:Name="kinectCanvas"></Canvas>
+                </Grid>    
+                <StackPanel>
+                    <Grid Width="640" Height="480">
+                        <Image Source="/KinectGestureDectection;component/crecy-battlefield.jpg" Width="640" Height="480" x:Name="backgroundImage"></Image>
+                        <Image Source="/KinectGestureDectection;component/knight01.gif" Width="239" Height="284" x:Name="enemyImage" Visibility="Hidden"></Image>
+                        <Canvas Width="640" Height="480" x:Name="mainCanvas">
+                            <Image Source="sword.png" Width="35" Height="34" Visibility="Hidden" x:Name="swordCursor" Canvas.ZIndex="99"/>
+                            <Image Source="hand.png" Width="50" Height="60" RenderTransformOrigin="0.5,0.5" Visibility="Hidden" x:Name="rightHand" Canvas.ZIndex="99"/>
+                            <Image Source="hand.png" Width="50" Height="60" RenderTransformOrigin="0.5,0.5" Visibility="Hidden" x:Name="leftHand" Canvas.ZIndex="99">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="-1"/>
+                                </Image.RenderTransform>
+                            </Image>
+                        </Canvas>
+                    </Grid>
+                    <ScrollViewer Height="75" x:Name="textScrollView">
+                        <TextBlock HorizontalAlignment="Left" x:Name="textBlock1" VerticalAlignment="Top" FontSize="28"/>
+                    </ScrollViewer>
+                </StackPanel>                    
+            </StackPanel>                              
         </Viewbox>
     </Grid>
 </Window>

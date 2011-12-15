@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using Microsoft.Research.Kinect.Nui;
 using Kinect.Toolbox;
+using System.Windows.Controls;
 
 namespace KinectGestureDectection
 {
@@ -35,6 +36,7 @@ namespace KinectGestureDectection
         void PostureDetector_PostureDetected(string obj)
         {
             kinectManager.CurrentState = KinectManager.InputState.Gesture;
+            swordCursor.Visibility = System.Windows.Visibility.Visible;
             if (nextPrompt == "Slash Left")
             {
                 attackIndicator.Start(AttackType.SlashRightToLeft);
@@ -65,6 +67,7 @@ namespace KinectGestureDectection
             if (game.EnterGesture(gesture))
             {
                 attackIndicator.Stop();
+                swordCursor.Visibility = System.Windows.Visibility.Hidden;
                 // If correct, go to the next turn
                 dispatcherTimer.Stop();
                 NextTurn();
@@ -101,6 +104,8 @@ namespace KinectGestureDectection
             kinectManager.GestureDetector.OnGestureDetected += new Action<string>(GestureDetector_OnGestureDetected);
             kinectManager.GestureDetector.TraceTo(mainCanvas, System.Windows.Media.Color.FromRgb(255, 0, 0));
             kinectManager.GestureDetector.MinimalPeriodBetweenGestures = 2000;
+            kinectManager.GestureUpdate += new Action<Point>(kinectManager_GestureUpdate);
+            kinectManager.CursorUpdate += new Action<Point, Point>(kinectManager_CursorUpdate);
             kinectManager.CursorUpdatable = pathSelector;
             /** **/
 
@@ -108,6 +113,20 @@ namespace KinectGestureDectection
             attackIndicator = new AttackIndicator(mainCanvas);
             mapDisplay = new MapDisplay(mainCanvas, game);
             lifeDisplay = new LifeDisplay(mainCanvas, game);
+        }
+
+        void kinectManager_CursorUpdate(Point leftHandPosition, Point rightHandPosition)
+        {
+            Canvas.SetLeft(leftHand, leftHandPosition.X);
+            Canvas.SetTop(leftHand, leftHandPosition.Y);
+            Canvas.SetLeft(rightHand, rightHandPosition.X);
+            Canvas.SetTop(rightHand, rightHandPosition.Y);
+        }
+
+        void kinectManager_GestureUpdate(Point obj)
+        {
+            Canvas.SetLeft(swordCursor, obj.X);
+            Canvas.SetTop(swordCursor, obj.Y);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -158,11 +177,17 @@ namespace KinectGestureDectection
                 else if (game.mapPositionY == 2)
                     pathSelector.SetTargetEnabled(PathSelectionComponent.PathDirection.Forward, false);
                 kinectManager.CurrentState = KinectManager.InputState.Cursor;
+                leftHand.Visibility = System.Windows.Visibility.Visible;
+                rightHand.Visibility = System.Windows.Visibility.Visible;
+                enemyImage.Visibility = System.Windows.Visibility.Hidden;
                 PrintLine("Choose direction to go to");
             }
             else
             {
                 kinectManager.CurrentState = KinectManager.InputState.Posture;
+                leftHand.Visibility = System.Windows.Visibility.Hidden;
+                rightHand.Visibility = System.Windows.Visibility.Hidden;
+                enemyImage.Visibility = System.Windows.Visibility.Visible;
                 PrintLine("Bring your hands together to swing your sword.");
             }
 

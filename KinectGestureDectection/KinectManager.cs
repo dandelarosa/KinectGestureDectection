@@ -98,6 +98,9 @@ namespace KinectGestureDectection
         /// </summary>
         public ICursorUpdatable CursorUpdatable { get; set; }
 
+        public event Action<Point> GestureUpdate;
+        public event Action<Point, Point> CursorUpdate;
+
         /// <summary>
         /// Creates a new KinectManager instance.
         /// </summary>
@@ -186,7 +189,17 @@ namespace KinectGestureDectection
             var gestureDetector = GestureDetector;
             Joint rightHand = skeleton.Joints[JointID.HandRight];
             if (gestureDetector != null && rightHand.TrackingState == JointTrackingState.Tracked)
+            {
                 gestureDetector.Add(rightHand.Position, kinect.SkeletonEngine);
+                var handler = GestureUpdate;
+                if (handler != null)
+                {
+                    float x = 0, y = 0;
+                    kinect.SkeletonEngine.SkeletonToDepthImage(skeleton.Joints[JointID.HandRight].Position, out x, out y);
+                    Point position = new Point(canvas.ActualWidth * x, canvas.ActualHeight * y);
+                    handler(position);
+                }
+            }
         }
         
         // Internal buffer used to store cursor locations for updating.
@@ -213,6 +226,9 @@ namespace KinectGestureDectection
             cursors[1] = new Point(canvas.ActualWidth * x, canvas.ActualHeight * y);
 
             cursorUpdatable.UpdateCursors(cursors);
+            var handler = CursorUpdate;
+            if (handler != null)
+                handler(cursors[0], cursors[1]);
         }
 
         // Called each skeleton frame, dispataches appropriate update based on current state.

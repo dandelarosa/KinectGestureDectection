@@ -31,9 +31,9 @@ namespace KinectGestureDectection
             {
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
-                StrokeThickness = 0.5,
+                StrokeThickness = 0.75,
                 Stroke = Brushes.White,
-                Fill = new SolidColorBrush(Color.FromArgb(75, 255, 0, 0)), 
+                Fill = new SolidColorBrush(Color.FromArgb(200, 255, 0, 0)), 
                 Width = 100,
                 Height = 100,
             };

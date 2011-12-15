@@ -9,7 +9,7 @@ namespace KinectGestureDectection
 {
     class SimpleSlashGestureDetector : GestureDetector
     {
-        protected const float SwipeMinimalLength = 0.50f;
+        protected const float SwipeMinimalLength = 0.40f;
         protected const int SwipeMinimalDuration = 100;
         protected const int SwipeMaximalDuration = 500;
 
