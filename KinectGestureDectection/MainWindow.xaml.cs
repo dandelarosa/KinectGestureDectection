@@ -16,6 +16,7 @@ namespace KinectGestureDectection
         private AttackIndicator attackIndicator;
         private PathSelectionComponent pathSelector;
         private MapDisplay mapDisplay;
+        private LifeDisplay lifeDisplay;
         private Game game = new Game();
         private bool isGameStarted = false;
 
@@ -106,6 +107,7 @@ namespace KinectGestureDectection
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             attackIndicator = new AttackIndicator(mainCanvas);
             mapDisplay = new MapDisplay(mainCanvas, game);
+            lifeDisplay = new LifeDisplay(mainCanvas, game);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -135,12 +137,8 @@ namespace KinectGestureDectection
             attackIndicator.Stop();
 
             // Display current life 
-            playerLife.Text = "Player Life: " + game.currentPlayerLife + "/" + game.maxPlayerLife;
-            enemyLife.Text = "Enemy Life: " + game.GetCurrentEnemyLife() + "/" + game.GetMaxEnemyLife();
-            // Print current life
-            //PrintLine("Player Life: " + game.currentPlayerLife + "/" + game.maxPlayerLife);
-            //PrintLine("Enemy Life: " + game.GetCurrentEnemyLife() + "/" + game.GetMaxEnemyLife());
-
+            lifeDisplay.update();
+            
             // Tell the game that it's the next turn
             game.NextTurn();
 
